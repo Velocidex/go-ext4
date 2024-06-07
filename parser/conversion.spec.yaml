@@ -1,0 +1,15 @@
+Module: parser
+Profile: EXT4Profile
+Filename: ext4_profile.json
+GenerateDebugString: true
+Structs:
+  - Header
+  - Superblock
+  - GroupDescriptor32
+  - GroupDescriptor64
+  - Inode_
+  - ExtentHeader
+  - ExtentEntry
+  - ExtentIndex
+  - Ext4DirEntry
+  - Misc

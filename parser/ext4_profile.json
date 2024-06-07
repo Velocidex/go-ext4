@@ -1,0 +1,115 @@
+{
+    "Header": [0, {
+        "Superblock": [1024, ["Superblock"]]
+    }],
+    "Superblock": [0, {
+        "InodeCount": [0, ["unsigned long"]],
+        "BlockCountLo": [4, ["unsigned long"]],
+        "BlockCountHi": [308, ["unsigned long"]],
+        "FirstDataBlock": [20, ["unsigned long"]],
+        "FeatureIncompat": [96, ["Flags", {
+            "target": "unsigned long",
+            "maskmap": {
+                "FEATURE_INCOMPAT_64BIT": 128,
+                "FEATURE_INCOMPAT_META_BG": 16,
+                "FEATURE_INCOMPAT_ENCRYPT": 65536
+            }
+        }]],
+        "FeatureCompat": [92, ["unsigned long"]],
+        "BlockPerGroup": [32, ["unsigned long"]],
+        "InodePerGroup": [40, ["unsigned long"]],
+        "InodeSize": [88, ["unsigned short"]],
+        "LogBlockSize": [24, ["unsigned long"]],
+        "LogGroupPerFlex": [372, ["unsigned char"]],
+        "Magic": [56, ["unsigned short"]]
+    }],
+    "GroupDescriptor32": [32, {
+        "BlockBitmapLo": [0, ["unsigned long"]],
+        "InodeBitmapLo": [4, ["unsigned long"]],
+        "InodeTableLo": [8, ["unsigned long"]]
+    }],
+    "GroupDescriptor64": [64, {
+        "BlockBitmapLo": [0, ["unsigned long"]],
+        "InodeBitmapLo": [4, ["unsigned long"]],
+        "InodeTableLo": [8, ["unsigned long"]],
+
+        "BlockBitmapHi": [32, ["unsigned long"]],
+        "InodeBitmapHi": [36, ["unsigned long"]],
+        "InodeTableHi": [40, ["unsigned long"]]
+    }],
+    "Inode_": [0, {
+        "Mode": [0, ["unsigned short"]],
+        "Uid": [2, ["unsigned short"]],
+        "UidHi": [120, ["unsigned short"]],
+
+
+        "SizeLo": [4, ["unsigned long"]],
+        "SizeHi": [108, ["unsigned long"]],
+
+        "BlockPointers": [40, ["String", {"length": 60}]],
+
+        "Atime": [8, ["unsigned long"]],
+        "AtimeExtra": [140, ["unsigned long"]],
+
+        "Ctime": [12, ["unsigned long"]],
+        "CtimeExtra": [132, ["unsigned long"]],
+
+        "Mtime": [16, ["unsigned long"]],
+        "MtimeExtra": [136, ["unsigned long"]],
+
+        "CRtime": [144, ["unsigned long"]],
+        "CRtimeExtra": [148, ["unsigned long"]],
+
+        "Dtime": [20, ["unsigned long"]],
+        "Gid":  [24, ["unsigned short"]],
+        "GidHi":  [122, ["unsigned short"]],
+
+        "LinksCount":  [28, ["unsigned long"]],
+        "BlocksLo":  [32, ["unsigned long"]],
+        "Flags":  [36, ["unsigned long"]]
+    }],
+    "ExtentHeader": [12, {
+        "Magic": [0, ["unsigned short"]],
+        "EntryCount": [2, ["unsigned short"]],
+        "Max": [4, ["unsigned short"]],
+        "Depth": [6, ["unsigned short"]],
+        "Generation": [8, ["unsigned long"]],
+
+        "_EntryArray": [12, ["Array", {"target": "ExtentEntry"}]],
+        "_IndexEntryArray": [12, ["Array", {"target": "ExtentIndex"}]]
+    }],
+    "ExtentEntry": [12, {
+        "FirstLogicalBlock": [0, ["unsigned long"]],
+        "Length": [4, ["unsigned short"]],
+        "StartHi": [6, ["unsigned short"]],
+        "StartLo": [8, ["unsigned long"]]
+    }],
+    "ExtentIndex": [12, {
+        "FirstLogicalBlock": [0, ["unsigned long"]],
+        "LeafLo": [4, ["unsigned long"]],
+        "LeafHi": [8, ["unsigned short"]]
+    }],
+    "Ext4DirEntry": [0, {
+        "Inode": [0, ["unsigned long"]],
+        "RecLen": [4, ["unsigned short"]],
+        "NameLen": [6, ["unsigned char"]],
+        "FileTypeInt": [7, ["unsigned char"]],
+        "FileType": [7, ["Enumeration", {
+            "target": "unsigned char",
+            "choices": {
+                "1": "EXT4_FT_REG_FILE",
+                "2": "EXT4_FT_DIR",
+                "3": "EXT4_FT_CHRDEV",
+                "4": "EXT4_FT_BLKDEV",
+                "5": "EXT4_FT_FIFO",
+                "6": "EXT4_FT_SOCK",
+                "7": "EXT4_FT_SYMLINK"
+            }
+        }]],
+        "Name": [8, ["String"]]
+    }],
+    "Misc": [0, {
+        "GD32": [0, ["Array", {"target": "GroupDescriptor32"}]],
+        "GD64": [0, ["Array", {"target": "GroupDescriptor64"}]]
+    }]
+}
