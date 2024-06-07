@@ -20,7 +20,7 @@ jobs:
       run: |
         make
         make windows
-        go test -v ./...
+        TZ=UTC go test -v ./...
 
     - name: StoreBinaries
       uses: actions/upload-artifact@v2
