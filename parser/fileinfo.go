@@ -41,6 +41,10 @@ func (self *FileInfo) Inode() int64 {
 	return self.inode
 }
 
+func (self *FileInfo) Flags() []string {
+	return self.flags
+}
+
 func (self *FileInfo) Uid() int64 {
 	return self.uid
 }
