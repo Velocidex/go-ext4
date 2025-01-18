@@ -40,6 +40,7 @@ func (self *Inode) Stat() *FileInfo {
 		inode:      self.inode,
 		name:       self.name,
 		components: self.components,
+		flags:      self.Flags().Values(),
 
 		mtime: time.Unix(int64(self.Mtime()), int64(self.MtimeExtra())>>2),
 		atime: time.Unix(int64(self.Atime()), int64(self.AtimeExtra())>>2),

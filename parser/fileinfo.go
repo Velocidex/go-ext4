@@ -22,6 +22,7 @@ type FileInfo struct {
 	mode fs.FileMode
 
 	uid, gid int64
+	flags    []string
 }
 
 func (self *FileInfo) Name() string {
@@ -77,6 +78,14 @@ func (self *FileInfo) Mode() fs.FileMode {
 }
 
 func (self *FileInfo) Dict() *ordereddict.Dict {
+	data := ordereddict.NewDict().
+		Set("Inode", self.inode).
+		Set("Uid", self.uid).
+		Set("Gid", self.gid)
+	if len(self.flags) > 0 {
+		data.Set("Flags", self.flags)
+	}
+
 	return ordereddict.NewDict().
 		Set("Name", self.Name()).
 		Set("FullPath", self.FullPath()).
@@ -88,10 +97,7 @@ func (self *FileInfo) Dict() *ordereddict.Dict {
 		Set("Atime", self.Atime()).
 		Set("Ctime", self.Ctime()).
 		Set("Btime", self.Btime()).
-		Set("Data", ordereddict.NewDict().
-			Set("Inode", self.inode).
-			Set("Uid", self.uid).
-			Set("Gid", self.gid))
+		Set("Data", data)
 }
 
 func (self *FileInfo) MarshalJSON() ([]byte, error) {

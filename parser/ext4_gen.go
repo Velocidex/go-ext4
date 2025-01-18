@@ -106,7 +106,7 @@ type EXT4Profile struct {
 
 func NewEXT4Profile() *EXT4Profile {
     // Specific offsets can be tweaked to cater for slight version mismatches.
-    self := &EXT4Profile{0,4,6,7,7,8,0,4,6,8,0,2,4,6,8,12,12,0,4,8,0,4,8,0,4,8,32,36,40,1024,0,2,120,4,108,40,8,140,12,132,16,136,144,148,20,24,122,28,32,36,0,0,0,4,308,20,96,92,32,40,88,24,372,56}
+    self := &EXT4Profile{0,4,6,7,7,8,0,4,6,8,0,2,4,6,8,12,12,0,4,8,0,4,8,0,4,8,32,36,40,1024,0,2,120,4,108,40,8,140,12,132,16,136,144,148,20,24,122,26,28,32,0,0,0,4,308,20,96,92,32,40,88,24,372,56}
     return self
 }
 
@@ -511,9 +511,34 @@ func (self *Inode_) BlocksLo() uint32 {
    return ParseUint32(self.Reader, self.Profile.Off_Inode__BlocksLo + self.Offset)
 }
 
-func (self *Inode_) Flags() uint32 {
-   return ParseUint32(self.Reader, self.Profile.Off_Inode__Flags + self.Offset)
+func (self *Inode_) Flags() *Flags {
+   value := ParseUint32(self.Reader, self.Profile.Off_Inode__Flags + self.Offset)
+   names := make(map[string]bool)
+
+
+   if value & 128 != 0 {
+      names["NOATIME"] = true
+   }
+
+   if value & 8 != 0 {
+      names["SYNC"] = true
+   }
+
+   if value & 16 != 0 {
+      names["IMMUTABLE"] = true
+   }
+
+   if value & 32 != 0 {
+      names["APPEND"] = true
+   }
+
+   if value & 64 != 0 {
+      names["NODUMP"] = true
+   }
+
+   return &Flags{Value: uint64(value), Names: names}
 }
+
 func (self *Inode_) DebugString() string {
     result := fmt.Sprintf("struct Inode_ @ %#x:\n", self.Offset)
     result += fmt.Sprintf("  Mode: %#0x\n", self.Mode())
@@ -535,7 +560,7 @@ func (self *Inode_) DebugString() string {
     result += fmt.Sprintf("  GidHi: %#0x\n", self.GidHi())
     result += fmt.Sprintf("  LinksCount: %#0x\n", self.LinksCount())
     result += fmt.Sprintf("  BlocksLo: %#0x\n", self.BlocksLo())
-    result += fmt.Sprintf("  Flags: %#0x\n", self.Flags())
+    result += fmt.Sprintf("  Flags: %v\n", self.Flags().DebugString())
     return result
 }
 
