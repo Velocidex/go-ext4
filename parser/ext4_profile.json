@@ -42,7 +42,6 @@
         "Uid": [2, ["unsigned short"]],
         "UidHi": [120, ["unsigned short"]],
 
-
         "SizeLo": [4, ["unsigned long"]],
         "SizeHi": [108, ["unsigned long"]],
 
@@ -64,9 +63,18 @@
         "Gid":  [24, ["unsigned short"]],
         "GidHi":  [122, ["unsigned short"]],
 
-        "LinksCount":  [28, ["unsigned long"]],
-        "BlocksLo":  [32, ["unsigned long"]],
-        "Flags":  [36, ["unsigned long"]]
+        "LinksCount":  [26, ["unsigned long"]],
+        "BlocksLo":  [28, ["unsigned long"]],
+        "Flags":  [32, ["Flags", {
+            "target": "unsigned long",
+            "maskmap": {
+                "SYNC": 8,
+                "IMMUTABLE": 16,
+                "APPEND": 32,
+                "NODUMP": 64,
+                "NOATIME": 128
+            }
+        }]]
     }],
     "ExtentHeader": [12, {
         "Magic": [0, ["unsigned short"]],
