@@ -106,7 +106,7 @@ type EXT4Profile struct {
 
 func NewEXT4Profile() *EXT4Profile {
     // Specific offsets can be tweaked to cater for slight version mismatches.
-    self := &EXT4Profile{0,4,6,7,7,8,0,4,6,8,0,2,4,6,8,12,12,0,4,8,0,4,8,0,4,8,32,36,40,1024,0,2,120,4,108,40,8,140,12,132,16,136,144,148,20,24,122,26,28,32,0,0,0,4,308,20,96,92,32,40,88,24,372,56}
+    self := &EXT4Profile{0,4,6,7,7,8,0,4,6,8,0,2,4,6,8,12,12,0,4,8,0,4,8,0,4,8,32,36,40,1024,0,2,120,4,108,40,8,140,12,132,16,136,144,148,20,24,122,26,28,32,0,0,0,4,336,20,96,92,32,40,88,24,372,56}
     return self
 }
 
@@ -516,10 +516,6 @@ func (self *Inode_) Flags() *Flags {
    names := make(map[string]bool)
 
 
-   if value & 128 != 0 {
-      names["NOATIME"] = true
-   }
-
    if value & 8 != 0 {
       names["SYNC"] = true
    }
@@ -534,6 +530,10 @@ func (self *Inode_) Flags() *Flags {
 
    if value & 64 != 0 {
       names["NODUMP"] = true
+   }
+
+   if value & 128 != 0 {
+      names["NOATIME"] = true
    }
 
    return &Flags{Value: uint64(value), Names: names}
@@ -617,16 +617,16 @@ func (self *Superblock) FeatureIncompat() *Flags {
    names := make(map[string]bool)
 
 
+   if value & 65536 != 0 {
+      names["FEATURE_INCOMPAT_ENCRYPT"] = true
+   }
+
    if value & 128 != 0 {
       names["FEATURE_INCOMPAT_64BIT"] = true
    }
 
    if value & 16 != 0 {
       names["FEATURE_INCOMPAT_META_BG"] = true
-   }
-
-   if value & 65536 != 0 {
-      names["FEATURE_INCOMPAT_ENCRYPT"] = true
    }
 
    return &Flags{Value: uint64(value), Names: names}
@@ -718,6 +718,12 @@ func (self Flags) Values() []string {
 
 
 func ParseArray_ExtentEntry(profile *EXT4Profile, reader io.ReaderAt, offset int64, count int) []*ExtentEntry {
+    if count <= 0 {
+      count = 0
+    }
+    if count > 4000000 {
+       count = 4000000
+    }
     result := make([]*ExtentEntry, 0, count)
     for i:=0; i<count; i++ {
       value := profile.ExtentEntry(reader, offset)
@@ -728,6 +734,12 @@ func ParseArray_ExtentEntry(profile *EXT4Profile, reader io.ReaderAt, offset int
 }
 
 func ParseArray_ExtentIndex(profile *EXT4Profile, reader io.ReaderAt, offset int64, count int) []*ExtentIndex {
+    if count <= 0 {
+      count = 0
+    }
+    if count > 4000000 {
+       count = 4000000
+    }
     result := make([]*ExtentIndex, 0, count)
     for i:=0; i<count; i++ {
       value := profile.ExtentIndex(reader, offset)
@@ -738,6 +750,12 @@ func ParseArray_ExtentIndex(profile *EXT4Profile, reader io.ReaderAt, offset int
 }
 
 func ParseArray_GroupDescriptor32(profile *EXT4Profile, reader io.ReaderAt, offset int64, count int) []*GroupDescriptor32 {
+    if count <= 0 {
+      count = 0
+    }
+    if count > 4000000 {
+       count = 4000000
+    }
     result := make([]*GroupDescriptor32, 0, count)
     for i:=0; i<count; i++ {
       value := profile.GroupDescriptor32(reader, offset)
@@ -748,6 +766,12 @@ func ParseArray_GroupDescriptor32(profile *EXT4Profile, reader io.ReaderAt, offs
 }
 
 func ParseArray_GroupDescriptor64(profile *EXT4Profile, reader io.ReaderAt, offset int64, count int) []*GroupDescriptor64 {
+    if count <= 0 {
+      count = 0
+    }
+    if count > 4000000 {
+       count = 4000000
+    }
     result := make([]*GroupDescriptor64, 0, count)
     for i:=0; i<count; i++ {
       value := profile.GroupDescriptor64(reader, offset)
@@ -802,6 +826,13 @@ func ParseTerminatedString(reader io.ReaderAt, offset int64) string {
 }
 
 func ParseString(reader io.ReaderAt, offset int64, length int64) string {
+    if length <= 0 {
+      length = 0
+    }
+    if length > 4000000 {
+       length = 4000000
+    }
+
    data := make([]byte, length)
    n, err := reader.ReadAt(data, offset)
    if err != nil && err != io.EOF {

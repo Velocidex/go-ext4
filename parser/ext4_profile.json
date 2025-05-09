@@ -5,7 +5,7 @@
     "Superblock": [0, {
         "InodeCount": [0, ["unsigned long"]],
         "BlockCountLo": [4, ["unsigned long"]],
-        "BlockCountHi": [308, ["unsigned long"]],
+        "BlockCountHi": [336, ["unsigned long"]],
         "FirstDataBlock": [20, ["unsigned long"]],
         "FeatureIncompat": [96, ["Flags", {
             "target": "unsigned long",

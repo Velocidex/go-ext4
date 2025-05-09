@@ -207,6 +207,6 @@ type InodeData struct {
 }
 
 func DebugStruct() {
-	a := InodeData{}
-	fmt.Printf("Offset %v\n", unsafe.Offsetof(a.IGid))
+	a := SuperblockStruct{}
+	fmt.Printf("Offset %v\n", unsafe.Offsetof(a.LogGroupPerFlex))
 }
