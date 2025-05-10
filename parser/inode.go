@@ -56,15 +56,12 @@ func (self *Inode) Stat() *FileInfo {
 // Walk the extents tree and collect the runs
 func (self *Inode) GetReader(ctx *EXT4Context) (io.ReaderAt, error) {
 	runs := self.Runs(ctx)
-	reader, err := NewPagedReader(&ExtentReader{
+	reader := &ExtentReader{
 		Reader: self.Reader,
 		Size:   self.DataSize(),
 		Runs:   runs,
-	}, ctx.BlockSize, 100)
-
-	reader.SetSize(self.DataSize())
-
-	return reader, err
+	}
+	return reader, nil
 }
 
 func (self *Inode) dir(ctx *EXT4Context) ([]DirEntry, error) {
@@ -82,12 +79,17 @@ func (self *Inode) dir(ctx *EXT4Context) ([]DirEntry, error) {
 			int64(dir_entry.NameLen()))
 		inode_number := int64(dir_entry.Inode())
 
+		record_length := int64(dir_entry.RecLen())
+		if record_length == 0 {
+			break
+		}
+
 		file_mode := fs.FileMode(0)
 		switch dir_entry.FileTypeInt() {
 
 		// Not a real file skip.
 		case 0:
-			offset += int64(dir_entry.RecLen())
+			offset += record_length
 			continue
 
 		case 2:
@@ -111,7 +113,7 @@ func (self *Inode) dir(ctx *EXT4Context) ([]DirEntry, error) {
 			Inode:    inode_number,
 			FileMode: file_mode,
 		})
-		offset += int64(dir_entry.RecLen())
+		offset += record_length
 	}
 
 	return res, nil
