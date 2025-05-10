@@ -36,6 +36,11 @@ func (self *ExtentReader) ReadAt(buf []byte, offset int64) (int, error) {
 
 		buf_offset += n
 	}
+
+	if buf_offset == 0 {
+		return 0, io.EOF
+	}
+
 	return buf_offset, nil
 }
 
