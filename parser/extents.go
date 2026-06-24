@@ -55,24 +55,58 @@ func (self *ExtentReader) getRun(offset int64) (*Run, error) {
 	return nil, io.EOF
 }
 
+// nextRun returns the run with the smallest FileOffset that is still greater
+// than offset, or nil when no such run exists.
+func (self *ExtentReader) nextRun(offset int64) *Run {
+	var next *Run
+	for i := range self.Runs {
+		r := &self.Runs[i]
+		if r.FileOffset > offset {
+			if next == nil || r.FileOffset < next.FileOffset {
+				next = r
+			}
+		}
+	}
+	return next
+}
+
 func (self *ExtentReader) readParial(buf []byte, offset int64) (int, error) {
+	if offset >= self.Size {
+		return 0, io.EOF
+	}
+
 	run, err := self.getRun(offset)
-	if err != nil {
-		return 0, err
+	if err == nil {
+		available_bytes := run.FileOffset + run.Length - offset
+		run_offset := offset - run.FileOffset
+
+		// Do not read past the file end.
+		if offset+available_bytes > self.Size {
+			available_bytes = self.Size - offset
+		}
+
+		if available_bytes > int64(len(buf)) {
+			available_bytes = int64(len(buf))
+		}
+
+		return self.Reader.ReadAt(
+			buf[0:available_bytes], run.DiskOffset+run_offset)
 	}
 
-	available_bytes := run.FileOffset + run.Length - offset
-	run_offset := offset - run.FileOffset
-
-	// Do not read past the file end.
-	if offset+available_bytes > self.Size {
-		available_bytes = self.Size - offset
+	// Sparse hole: fill with zeros up to the next extent or file end.
+	holeEnd := self.Size
+	if next := self.nextRun(offset); next != nil && next.FileOffset < holeEnd {
+		holeEnd = next.FileOffset
 	}
 
+	available_bytes := holeEnd - offset
 	if available_bytes > int64(len(buf)) {
 		available_bytes = int64(len(buf))
 	}
 
-	return self.Reader.ReadAt(
-		buf[0:available_bytes], run.DiskOffset+run_offset)
+	hole := buf[0:available_bytes]
+	for i := range hole {
+		hole[i] = 0
+	}
+	return int(available_bytes), nil
 }
